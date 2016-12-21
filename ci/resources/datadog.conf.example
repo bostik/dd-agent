@@ -101,6 +101,14 @@ use_mount: no
 # statsd_forward_host: address_of_own_statsd_server
 # statsd_forward_port: 8125
 
+# By default dogstatsd sends statsd measurements out every 10 seconds.
+# For most purposes this is frequent enough, but some extremely
+# high-frequency and/or low-latency applications may require a shorter
+# interval. Before you set this value lower than 10, you should be
+# recording at least tens, and preferably hundreds of datapoints per
+# second.
+# statsd_flush_interval: 10
+
 # ========================================================================== #
 # Service-specific configuration                                             #
 # ========================================================================== #

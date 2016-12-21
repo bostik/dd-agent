@@ -506,6 +506,7 @@ def get_config(parse_args=True, cfg_path=None, options=None):
         dogstatsd_defaults = {
             'dogstatsd_port': 8125,
             'dogstatsd_target': 'http://' + agentConfig['bind_host'] + ':17123',
+            'dogstatsd_flush_interval': 10,
         }
         for key, value in dogstatsd_defaults.iteritems():
             if config.has_option('Main', key):

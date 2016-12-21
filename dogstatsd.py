@@ -59,7 +59,7 @@ PID_NAME = "dogstatsd"
 PID_DIR = None
 
 # Dogstatsd constants in seconds
-DOGSTATSD_FLUSH_INTERVAL = 10
+DOGSTATSD_FLUSH_DEFAULT_INTERVAL = 10
 DOGSTATSD_AGGREGATOR_BUCKET_SIZE = 10
 
 
@@ -495,7 +495,7 @@ def init(config_path=None, use_watchdog=False, use_forwarder=False, args=None):
         sys.exit(0)
 
     port = c['dogstatsd_port']
-    interval = DOGSTATSD_FLUSH_INTERVAL
+    interval = c.get('statsd_flush_interval', DOGSTATSD_FLUSH_DEFAULT_INTERVAL)
     api_key = c['api_key']
     aggregator_interval = DOGSTATSD_AGGREGATOR_BUCKET_SIZE
     non_local_traffic = c['non_local_traffic']
