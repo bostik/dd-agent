@@ -743,8 +743,13 @@ def get_sdk_integrations_path(osname=None):
     if osname in ['windows']:
         raise PathNotFound()
 
-    cur_path = os.path.dirname(os.path.realpath(__file__))
-    path = os.path.join(cur_path, '..', SDK_INTEGRATIONS_DIR)
+    if os.environ.get('INTEGRATIONS_DIR'):
+        cur_path = os.environ['INTEGRATIONS_DIR']
+        path = os.path.join(cur_path, '..') # might need tweaking in the future.
+    else:
+        cur_path = os.path.dirname(os.path.realpath(__file__))
+        path = os.path.join(cur_path, '..', SDK_INTEGRATIONS_DIR)
+
     if os.path.exists(path):
         return path
     raise PathNotFound(path)
