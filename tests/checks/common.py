@@ -18,7 +18,7 @@ import json
 
 # project
 from checks import AgentCheck
-from config import get_checksd_path
+from config import get_checksd_path, get_sdk_integrations_path
 
 from utils.debug import get_check  # noqa -  FIXME 5.5.0 AgentCheck tests should not use this
 from utils.hostname import get_hostname
@@ -51,14 +51,22 @@ def get_check_class(name):
     return check_class
 
 
-def load_class(check_name, class_name):
+def load_class(check_name, class_name, is_sdk=False):
     """
     Retrieve a class with the given name within the given check module.
     """
-    checksd_path = get_checksd_path(get_os())
-    if checksd_path not in sys.path:
-        sys.path.append(checksd_path)
-    check_module = __import__(check_name)
+    check_module_name = check_name
+    if not is_sdk:
+        checksd_path = get_checksd_path(get_os())
+        if checksd_path not in sys.path:
+            sys.path.append(checksd_path)
+    else:
+        sdk_path = get_sdk_integrations_path(get_os())
+        if sdk_path not in sys.path:
+            sys.path.append(sdk_path)
+        check_module_name = "{}.check".format(check_name)
+
+    check_module = __import__(check_module_name)
     classes = inspect.getmembers(check_module, inspect.isclass)
     for name, clsmember in classes:
         if name == class_name:
