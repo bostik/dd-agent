@@ -740,7 +740,7 @@ def get_checksd_path(osname=None):
 def get_sdk_integrations_path(osname=None):
     if not osname:
         osname = get_os()
-    if osname in ['windows', 'mac']:
+    if osname in ['windows']:
         raise PathNotFound()
 
     cur_path = os.path.dirname(os.path.realpath(__file__))
