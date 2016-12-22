@@ -60,13 +60,14 @@ def load_class(check_name, class_name, is_sdk=False):
         checksd_path = get_checksd_path(get_os())
         if checksd_path not in sys.path:
             sys.path.append(checksd_path)
+        check_module = __import__(check_module_name)
     else:
         sdk_path = get_sdk_integrations_path(get_os())
         if sdk_path not in sys.path:
             sys.path.append(sdk_path)
         check_module_name = "{}.check".format(check_name)
+        check_module = __import__(check_module_name, fromlist=['check'])
 
-    check_module = __import__(check_module_name)
     classes = inspect.getmembers(check_module, inspect.isclass)
     for name, clsmember in classes:
         if name == class_name:
