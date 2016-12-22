@@ -34,8 +34,12 @@ def _load_sdk_module(name):
     sdk_path = get_sdk_integrations_path(get_os())
     if sdk_path not in sys.path:
         sys.path.append(sdk_path)
+
     module_name = "{}.check".format(name)
-    module = __import__(module_name, fromlist=['check'])
+    fd, filename, desc = imp.find_module(module_name, [sdk_path])
+    module = imp.load_module("sdk.{}".format(name), fd, filename, desc)
+    fd.close()
+    # module = __import__(module_name, fromlist=['check'])
 
     return module
 
