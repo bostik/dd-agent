@@ -37,7 +37,8 @@ def _load_sdk_module(name):
 
     fd, filename, desc = imp.find_module(name, [sdk_path])
     module = imp.load_module("_{}".format(name), fd, filename, desc)
-    fd.close()
+    if fd:
+        fd.close()
     # module = __import__(module_name, fromlist=['check'])
 
     return module
