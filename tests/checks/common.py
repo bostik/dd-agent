@@ -30,12 +30,25 @@ log = logging.getLogger('tests')
 def _is_sdk():
     return "SDK_TESTING" in os.environ
 
-def get_check_class(name):
-    checksd_path = get_checksd_path(get_os())
-    if checksd_path not in sys.path:
-        sys.path.append(checksd_path)
+def _load_sdk_module(name):
+    sdk_path = get_sdk_integrations_path(get_os())
+    if sdk_path not in sys.path:
+        sys.path.append(sdk_path)
+    module_name = "{}.check".format(name)
+    module = __import__(module_name, fromlist=['check'])
 
-    check_module = __import__(name)
+    return module
+
+def get_check_class(name):
+    if not _is_sdk():
+        checksd_path = get_checksd_path(get_os())
+        if checksd_path not in sys.path:
+            sys.path.append(checksd_path)
+
+        check_module = __import__(name)
+    else:
+        check_module = _load_sdk_module(name)
+
     check_class = None
     classes = inspect.getmembers(check_module, inspect.isclass)
     for _, clsmember in classes:
@@ -50,23 +63,18 @@ def get_check_class(name):
 
     return check_class
 
-
-def load_class(check_name, class_name, is_sdk=False):
+def load_class(check_name, class_name):
     """
     Retrieve a class with the given name within the given check module.
     """
     check_module_name = check_name
-    if not is_sdk:
+    if not _is_sdk():
         checksd_path = get_checksd_path(get_os())
         if checksd_path not in sys.path:
             sys.path.append(checksd_path)
         check_module = __import__(check_module_name)
     else:
-        sdk_path = get_sdk_integrations_path(get_os())
-        if sdk_path not in sys.path:
-            sys.path.append(sdk_path)
-        check_module_name = "{}.check".format(check_name)
-        check_module = __import__(check_module_name, fromlist=['check'])
+        check_module = _load_sdk_module(check_name)
 
     classes = inspect.getmembers(check_module, inspect.isclass)
     for name, clsmember in classes:
@@ -84,7 +92,7 @@ def load_check(name, config, agentConfig):
         fd, filename, desc = imp.find_module(name, [checksd_path])
         check_module = imp.load_module(name, fd, filename, desc)
     else:
-        check_module = __import__("check")
+        check_module = _load_sdk_module(name)
 
     check_class = None
     classes = inspect.getmembers(check_module, inspect.isclass)
